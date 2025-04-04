@@ -1,5 +1,5 @@
 blueprint:
-  name: Z2M - Hue Dimmer switch 4 buttons
+  name: Hue Dimmer switch 4 buttons
   description: >
     Use the individual buttons of the Hue Dimmer Switch to control an action by either a click or a long press.
   domain: automation
@@ -63,6 +63,42 @@ trigger:
     domain: mqtt
     device_id: !input 'dimmer'
     type: action
+    subtype: on_click
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: up_click
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: down_click
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: off_click
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: on_hold
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: up_hold
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: down_hold
+  - platform: device
+    domain: mqtt
+    device_id: !input 'dimmer'
+    type: action
+    subtype: off_hold
 action:
   - variables:
       command: "{{ trigger.subtype }}"
