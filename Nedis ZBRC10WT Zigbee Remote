@@ -1,0 +1,43 @@
+alias: Nedis ZBRC10WT Zigbee Remote
+description: >
+  Handles arm_day_zones, disarm, emergency, and arm_all_zones with one MQTT
+  trigger
+triggers:
+  - topic: zigbee2mqtt/YourDevice/action
+    trigger: mqtt
+actions:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.payload == 'arm_day_zones' }}"
+        sequence:
+          - target:
+              device_id: []
+            action: {}
+        alias: Button A
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.payload == 'disarm' }}"
+        sequence:
+          - target:
+              device_id: []
+            action: {}
+        alias: Button B
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.payload == 'emergency' }}"
+        sequence:
+          - target:
+              device_id: []
+            action: {}
+        alias: Button O
+      - conditions:
+          - condition: template
+            value_template: "{{ trigger.payload == 'arm_all_zones' }}"
+        sequence:
+          - target:
+              device_id: []
+            action: {}
+        alias: Button I
+    default: []
+mode: single
