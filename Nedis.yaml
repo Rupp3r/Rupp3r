@@ -12,7 +12,7 @@ actions:
             value_template: "{{ trigger.payload == 'arm_day_zones' }}"
         sequence:
           - target:
-              device_id: []
+              device_id:
             action: {}
         alias: Button A
       - conditions:
@@ -20,7 +20,7 @@ actions:
             value_template: "{{ trigger.payload == 'disarm' }}"
         sequence:
           - target:
-              device_id: []
+              device_id:
             action: {}
         alias: Button B
       - conditions:
@@ -28,7 +28,7 @@ actions:
             value_template: "{{ trigger.payload == 'emergency' }}"
         sequence:
           - target:
-              device_id: []
+              device_id:
             action: {}
         alias: Button O
       - conditions:
@@ -36,7 +36,7 @@ actions:
             value_template: "{{ trigger.payload == 'arm_all_zones' }}"
         sequence:
           - target:
-              device_id: []
+              device_id:
             action: {}
         alias: Button I
     default: []
