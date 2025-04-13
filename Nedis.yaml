@@ -41,6 +41,7 @@ action:
             value_template: "{{ trigger.payload == 'arm_day_zones' }}"
         sequence:
           - service: []
+            alias: Button A
             target:
               device_id: !input device_arm_day_zones
       - conditions:
