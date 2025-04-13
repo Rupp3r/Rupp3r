@@ -1,4 +1,5 @@
-alias: Nedis ZBRC10WT Zigbee Remote
+blueprint:
+  alias: Nedis ZBRC10WT Zigbee Remote
 description: >
   Handles arm_day_zones, disarm, emergency, and arm_all_zones with one MQTT
   trigger
