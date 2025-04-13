@@ -1,44 +1,67 @@
 blueprint:
-  alias: Nedis ZBRC10WT Zigbee Remote
-description: >
-  Handles arm_day_zones, disarm, emergency, and arm_all_zones with one MQTT
-  trigger
-triggers:
-  - topic: zigbee2mqtt/YourDevice/action
-    trigger: mqtt
-actions:
+  name: Nedis ZBRC10WT Zigbee remote
+  description: >
+    Controls devices based on MQTT payloads. Select the devices for each action and then reuse
+    this blueprint for similar devices.
+  domain: automation
+  input:
+    mqtt_topic:
+      name: MQTT Topic
+      description: The MQTT topic that provides the AlarmChain action.
+      default: zigbee2mqtt/YourDevice/action
+      selector:
+        text: {}
+    device_arm_day_zones:
+      name: Device for arm_day_zones
+      description: The device to toggle when the payload is "arm_day_zones".
+      selector:
+        device: {}
+    device_disarm:
+      name: Device for disarm
+      description: The device to toggle when the payload is "disarm".
+      selector:
+        device: {}
+    device_emergency:
+      name: Device for emergency
+      description: The device to toggle when the payload is "emergency".
+      selector:
+        device: {}
+    device_arm_all_zones:
+      name: Device for arm_all_zones
+      description: The device to toggle when the payload is "arm_all_zones".
+      selector:
+        device: {}
+trigger:
+  platform: mqtt
+  topic: !input mqtt_topic
+action:
   - choose:
       - conditions:
           - condition: template
             value_template: "{{ trigger.payload == 'arm_day_zones' }}"
         sequence:
-          - target:
-              device_id:
-            action: {}
-        alias: Button A
+          - service: []
+            target:
+              device_id: !input device_arm_day_zones
       - conditions:
           - condition: template
             value_template: "{{ trigger.payload == 'disarm' }}"
         sequence:
-          - target:
-              device_id:
-            action: {}
-        alias: Button B
+          - service: []
+            target:
+              device_id: !input device_disarm
       - conditions:
           - condition: template
             value_template: "{{ trigger.payload == 'emergency' }}"
         sequence:
-          - target:
-              device_id:
-            action: {}
-        alias: Button O
+          - service: []
+            target:
+              device_id: !input device_emergency
       - conditions:
           - condition: template
             value_template: "{{ trigger.payload == 'arm_all_zones' }}"
         sequence:
-          - target:
-              device_id:
-            action: {}
-        alias: Button I
+          - service: []
+            target:
+              device_id: !input device_arm_all_zones
     default: []
-mode: single
