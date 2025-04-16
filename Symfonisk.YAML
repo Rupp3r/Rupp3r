@@ -1,0 +1,167 @@
+blueprint:
+  name: zigbee2mqtt - IKEA Symfonisk sound remote GEN2
+  description: >
+    Media control and shortcut button support for the IKEA Symfonisk sound remote GEN2 using zigbee2mqtt.
+    Adjust the MQTT topic and payload action mappings as needed.
+  domain: automation
+  source_url: https://community.home-assistant.io/t/zha-ikea-symfonisk-sound-remote-gen2-media-control-dot-buttons-volume-up-down-hold/673094
+  input:
+    mqtt_topic:
+      name: MQTT Topic
+      description: >
+        The MQTT topic that the remote publishes to. For example: "zigbee2mqtt/symfonisk_remote_gen2"
+      default: zigbee2mqtt/symfonisk_remote_gen2
+      selector:
+        text: {}
+    media_player:
+      name: Media Player
+      description: The media player to control with this automation.
+      selector:
+        entity:
+          domain: media_player
+          multiple: false
+    volume_steps:
+      name: Volume number of steps
+      description: >
+        Controls the volume scale. The default of 25 matches the same scale as the Sonos app.
+      default: 25
+      selector:
+        number:
+          min: 5
+          max: 100
+          step: 5
+          unit_of_measurement: "Num"
+          mode: slider
+    single_dot_single_press:
+      name: Single dot (Single press)
+      description: Action to run on single dot press.
+      default: []
+      selector:
+        action: {}
+    single_dot_double_press:
+      name: Single dot (Double press)
+      description: Action to run on single dot double press.
+      default: []
+      selector:
+        action: {}
+    single_dot_long_press:
+      name: Single dot (Long press)
+      description: Action to run on single dot long press.
+      default: []
+      selector:
+        action: {}
+    double_dot_single_press:
+      name: Double dot (Single press)
+      description: Action to run on double dot press.
+      default: []
+      selector:
+        action: {}
+    double_dot_double_press:
+      name: Double dot (Double press)
+      description: Action to run on double dot double press.
+      default: []
+      selector:
+        action: {}
+    double_dot_long_press:
+      name: Double dot (Long press)
+      description: Action to run on double dot long press.
+      default: []
+      selector:
+        action: {}
+mode: single
+max_exceeded: silent
+
+trigger:
+  - platform: mqtt
+    topic: !input mqtt_topic
+
+action:
+  - variables:
+      command: "{{ trigger.payload_json.action }}"
+      player: !input media_player
+      steps: !input volume_steps
+      stepsize: "{{ 1.0 / steps }}"
+  - choose:
+      # Play/Pause
+      - conditions:
+          - "{{ command == 'toggle' }}"
+        sequence:
+          - service: media_player.media_play_pause
+            target:
+              entity_id: "{{ player }}"
+      # Volume Up Click (Press)
+      - conditions:
+          - "{{ command == 'volume_up_click' }}"
+        sequence:
+          - service: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: >-
+                {% set volume = state_attr(player, "volume_level") + stepsize %}
+                {{ 1.0 if volume > 1.0 else volume }}
+      # Volume Up Hold
+      - conditions:
+          - "{{ command == 'volume_up_hold' }}"
+        sequence:
+          - service: media_player.volume_up
+            target:
+              entity_id: "{{ player }}"
+      # Volume Down Click (Press)
+      - conditions:
+          - "{{ command == 'volume_down_click' }}"
+        sequence:
+          - service: media_player.volume_set
+            target:
+              entity_id: "{{ player }}"
+            data:
+              volume_level: >-
+                {% set volume = state_attr(player, "volume_level") - stepsize %}
+                {{ 0.0 if volume < 0.0 else volume }}
+      # Volume Down Hold
+      - conditions:
+          - "{{ command == 'volume_down_hold' }}"
+        sequence:
+          - service: media_player.volume_down
+            target:
+              entity_id: "{{ player }}"
+      # Next Track
+      - conditions:
+          - "{{ command == 'next_track' }}"
+        sequence:
+          - service: media_player.media_next_track
+            target:
+              entity_id: "{{ player }}"
+      # Previous Track
+      - conditions:
+          - "{{ command == 'previous_track' }}"
+        sequence:
+          - service: media_player.media_previous_track
+            target:
+              entity_id: "{{ player }}"
+      # Single Dot Press
+      - conditions:
+          - "{{ command == 'single_dot_press' }}"
+        sequence: !input single_dot_single_press
+      # Single Dot Double Press
+      - conditions:
+          - "{{ command == 'single_dot_double' }}"
+        sequence: !input single_dot_double_press
+      # Single Dot Long Press
+      - conditions:
+          - "{{ command == 'single_dot_long' }}"
+        sequence: !input single_dot_long_press
+      # Double Dot Press
+      - conditions:
+          - "{{ command == 'double_dot_press' }}"
+        sequence: !input double_dot_single_press
+      # Double Dot Double Press
+      - conditions:
+          - "{{ command == 'double_dot_double' }}"
+        sequence: !input double_dot_double_press
+      # Double Dot Long Press
+      - conditions:
+          - "{{ command == 'double_dot_long' }}"
+        sequence: !input double_dot_long_press
+mode: single
+max_exceeded: silent
